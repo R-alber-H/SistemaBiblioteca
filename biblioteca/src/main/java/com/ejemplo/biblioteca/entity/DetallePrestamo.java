@@ -13,15 +13,14 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class DetallePrestamo extends BaseEntity {
 
     @ManyToOne(optional = false)
-     @JoinColumn(name = "id_prestamo", nullable = false)
+    @JoinColumn(name = "id_prestamo", nullable = false)
     private Prestamo prestamo;
 
 
-     @ManyToOne(optional = false)
-     @JoinColumn(name = "id_libro", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_libro", nullable = false)
     private Libro libro;
 }
