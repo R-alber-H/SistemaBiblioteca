@@ -33,4 +33,16 @@ public class Libro extends BaseEntity {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private int stock;
 
+
+    public void verificarStockDisponible() {
+        if (stock <= 0) {
+            throw new RuntimeException("No hay stock disponible para el libro: " + titulo);
+        }
+    }
+
+    public void descontarStock() {
+        verificarStockDisponible();
+        this.stock -= 1;
+    }
+    
 }
