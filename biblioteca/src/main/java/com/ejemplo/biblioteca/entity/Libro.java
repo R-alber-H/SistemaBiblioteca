@@ -33,6 +33,9 @@ public class Libro extends BaseEntity {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private int stock;
 
+    @Column(nullable = false, unique = true)
+    private String isbn; 
+
 
     public void verificarStockDisponible() {
         if (stock <= 0) {

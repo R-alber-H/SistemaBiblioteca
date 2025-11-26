@@ -1,7 +1,12 @@
 package com.ejemplo.biblioteca.service.ServiceImpl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
+import com.ejemplo.biblioteca.dto.UsuarioDTO;
+import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
 import com.ejemplo.biblioteca.entity.Usuario;
 import com.ejemplo.biblioteca.repository.UsuarioRepository;
 import com.ejemplo.biblioteca.service.UsuarioService;
@@ -21,11 +26,74 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
 
     @Transactional
     @Override
-    public Usuario cambiarEstado(Long id) {
+    public UsuarioDTO cambiarEstado(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        usuario.setEstado(usuario.getEstado()==Estado.HABILITADO ? Estado.DESHABILITADO : Estado.HABILITADO);
-        return usuarioRepository.save(usuario);
+        usuario.setEstado(usuario.getEstado() == Estado.HABILITADO ? Estado.DESHABILITADO : Estado.HABILITADO);
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return toDTO(actualizado);
     }
 
+    @Override
+    @Transactional
+    public UsuarioDTO actualizarDatos(Long id, UsuarioUpdateDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setNombres(dto.nombres());
+        usuario.setApellidos(dto.apellidos());
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return toDTO(actualizado);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioDTO crear(UsuarioCreateDTO dto) {
+        Boolean existeDni = usuarioRepository.existsByDniIgnoreCaseAllIgnoreCase(dto.dni());
+        if (existeDni) {
+            new RuntimeException("El DNI ya esta registrado");
+        }
+        Usuario usuario = new Usuario();
+        usuario.setNombres(dto.nombres());
+        usuario.setApellidos(dto.apellidos());
+        usuario.setDni(dto.dni());
+        usuario.setCorreo(dto.correo());
+        usuario.setRol(dto.rol());
+
+        Usuario usuarioCreado = usuarioRepository.save(usuario);
+
+        return toDTO(usuarioCreado);
+    }
+
+    @Override
+    public List<UsuarioDTO> listarTodos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        return usuarios.stream().map(usuario -> new UsuarioDTO(
+            usuario.getId(),
+            usuario.getNombres(),
+            usuario.getApellidos(),
+            usuario.getDni(),
+            usuario.getCorreo(),
+            usuario.getEstado(),
+            usuario.getRol()
+        )).toList();
+    }
+
+    @Override
+    public UsuarioDTO buscarPorId(Long id) {
+
+       Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return toDTO(usuario);
+    }
+
+    private UsuarioDTO toDTO(Usuario usuario) {
+        return new UsuarioDTO(
+                usuario.getId(),
+                usuario.getNombres(),
+                usuario.getApellidos(),
+                usuario.getDni(),
+                usuario.getCorreo(),
+                usuario.getEstado(),
+                usuario.getRol());
+    }
 }
