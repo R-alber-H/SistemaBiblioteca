@@ -1,5 +1,8 @@
 package com.ejemplo.biblioteca.controller;
 
+import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
+import com.ejemplo.biblioteca.dto.UsuarioDTO;
+import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
 import com.ejemplo.biblioteca.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,28 +20,28 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarUsuarios(){
-        return new ResponseEntity<>(usuarioService.listarUsuarios(), HttpStatus.OK);
+        return new ResponseEntity<>(usuarioService.listarTodos(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> obtenerUsuarioPorId(@PathVariable Long id){
-        return new ResponseEntity<>(usuarioService.obtenerPorId(id), HttpStatus.OK);
+        return new ResponseEntity<>(usuarioService.buscarPorId(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> crearUsuario(@Valid @RequestBody UsuarioRequestDTO dto){
-        return new ResponseEntity<>(usuarioService.crearUsuario(dto), HttpStatus.CREATED);
+    public ResponseEntity<UsuarioDTO> crearUsuario(@Valid @RequestBody UsuarioCreateDTO dto){
+        return new ResponseEntity<>(usuarioService.crear(dto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> editarUsuario(@PathVariable Long id,
-                                                    @Valid @RequestBody UsuarioRequestDTO dto){
-        return new ResponseEntity<>(usuarioService.editarUsuario(id, dto), HttpStatus.OK);
+                                                    @Valid @RequestBody UsuarioUpdateDTO dto){
+        return new ResponseEntity<>(usuarioService.actualizarDatos(id, dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deshabilitarUsuario(@PathVariable Long id){
-        usuarioService.deshabilitarUsuario(id);
+        usuarioService.cambiarEstado(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
