@@ -1,5 +1,8 @@
 package com.ejemplo.biblioteca.controller;
 
+import com.ejemplo.biblioteca.dto.LibroCreateDto;
+import com.ejemplo.biblioteca.dto.LibroDTO;
+import com.ejemplo.biblioteca.dto.LibroUpdateDTO;
 import com.ejemplo.biblioteca.service.LibroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,19 +29,19 @@ public class LibroController {
     }
 
     @PostMapping
-    public ResponseEntity<LibroDTO> crearLibro(@Valid @RequestBody LibroRequestDTO dto){
-        return new ResponseEntity<>(libroService.crearLibro(),HttpStatus.CREATED);
+    public ResponseEntity<LibroDTO> crearLibro(@Valid @RequestBody LibroCreateDto dto){
+        return new ResponseEntity<>(libroService.registrarLibro(dto),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LibroDTO> editarLibro(@PathVariable Long id,
-                                                @Valid @RequestBody LibroRequestDTO dto){
-        return new ResponseEntity<>(libroService.editarLibro(),HttpStatus.OK);
+                                                @Valid @RequestBody LibroUpdateDTO dto){
+        return new ResponseEntity<>(libroService.actualizarLibro(dto,id),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deshabilitarLibro(@PathVariable Long id){
-        libroService.deshabilitarLibro(id);
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Long id){
+        libroService.cambiarEstado(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
