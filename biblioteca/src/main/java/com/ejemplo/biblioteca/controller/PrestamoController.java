@@ -30,12 +30,7 @@ public class PrestamoController {
 
     @PostMapping
     public ResponseEntity<PrestamoDTO> crearPrestamo(@Valid @RequestBody PrestamoCreateDTO dto){
-        List<Long> libroIds = dto.detalles()
-                .stream()
-                .map(DetallePrestamoDTO::libroId)
-                .toList();
-
-        return new ResponseEntity<>(prestamoService.crearPrestamo(dto.usuarioId(),libroIds), HttpStatus.CREATED);
+        return new ResponseEntity<>(prestamoService.crearPrestamo(dto.usuarioId(),dto.idLlibros()), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

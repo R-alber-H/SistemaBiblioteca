@@ -2,12 +2,15 @@ package com.ejemplo.biblioteca.service.ServiceImpl;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
 import com.ejemplo.biblioteca.dto.UsuarioDTO;
 import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
+import com.ejemplo.biblioteca.entity.Rol;
 import com.ejemplo.biblioteca.entity.Usuario;
+import com.ejemplo.biblioteca.repository.RolRepository;
 import com.ejemplo.biblioteca.repository.UsuarioRepository;
 import com.ejemplo.biblioteca.service.UsuarioService;
 import com.ejemplo.biblioteca.utils.Estado;
@@ -18,10 +21,14 @@ import jakarta.transaction.Transactional;
 public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository,RolRepository rolRepository,PasswordEncoder passwordEncoder) {
         super(usuarioRepository);
         this.usuarioRepository = usuarioRepository;
+        this.rolRepository = rolRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -50,14 +57,17 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
     public UsuarioDTO crear(UsuarioCreateDTO dto) {
         Boolean existeDni = usuarioRepository.existsByDniIgnoreCaseAllIgnoreCase(dto.dni());
         if (existeDni) {
-            new RuntimeException("El DNI ya esta registrado");
+            throw new RuntimeException("El DNI ya esta registrado");
         }
+        Rol rol = rolRepository.findById(dto.idRol())
+            .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         Usuario usuario = new Usuario();
         usuario.setNombres(dto.nombres());
         usuario.setApellidos(dto.apellidos());
         usuario.setDni(dto.dni());
         usuario.setCorreo(dto.correo());
-        usuario.setRol(dto.rol());
+        usuario.setPassword(passwordEncoder.encode(dto.password()));
+        usuario.setRol(rol);
 
         Usuario usuarioCreado = usuarioRepository.save(usuario);
 

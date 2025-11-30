@@ -4,6 +4,6 @@ import java.util.List;
 
 public record PrestamoCreateDTO(
     Long usuarioId,
-    List<DetallePrestamoDTO> detalles
+    List<Long> idLlibros
 ) {
 }
