@@ -1,6 +1,5 @@
 package com.ejemplo.biblioteca.controller;
 
-import com.ejemplo.biblioteca.dto.DetallePrestamoDTO;
 import com.ejemplo.biblioteca.dto.PrestamoCreateDTO;
 import com.ejemplo.biblioteca.dto.PrestamoDTO;
 import com.ejemplo.biblioteca.service.PrestamoService;

@@ -1,4 +1,7 @@
+
 package com.ejemplo.biblioteca.config;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +18,21 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())   
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()   
-            );
+            .authorizeHttpRequests(auth -> auth
+
+                .requestMatchers("/api/auth/registro").permitAll()
+
+                .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+
+                .requestMatchers("/api/roles/**").hasRole("ADMIN")
+
+                .requestMatchers("/api/libros/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
+
+                .requestMatchers("/api/prestamos/**").hasAnyRole("ADMIN", "BIBLIOTECARIO", "CLIENTE")
+
+                .anyRequest().authenticated()
+            )
+            .httpBasic(withDefaults()); 
 
         return http.build();
     }
@@ -25,5 +41,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
 }
