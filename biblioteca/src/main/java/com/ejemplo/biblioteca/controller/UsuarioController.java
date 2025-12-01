@@ -1,6 +1,5 @@
 package com.ejemplo.biblioteca.controller;
 
-import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
 import com.ejemplo.biblioteca.dto.UsuarioDTO;
 import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
 import com.ejemplo.biblioteca.service.UsuarioService;
@@ -11,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
+
     private final UsuarioService usuarioService;
 
     @GetMapping
@@ -26,11 +25,6 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> obtenerUsuarioPorId(@PathVariable Long id){
         return new ResponseEntity<>(usuarioService.buscarPorId(id), HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<UsuarioDTO> crearUsuario(@Valid @RequestBody UsuarioCreateDTO dto){
-        return new ResponseEntity<>(usuarioService.crear(dto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
