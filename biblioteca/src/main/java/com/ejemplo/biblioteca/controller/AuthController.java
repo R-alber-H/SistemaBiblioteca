@@ -11,18 +11,17 @@ import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
 import com.ejemplo.biblioteca.dto.UsuarioDTO;
 import com.ejemplo.biblioteca.service.UsuarioService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/public")
 @RequiredArgsConstructor
 public class AuthController {
     
      private final UsuarioService usuarioService;
 
      @PostMapping("/registro")
-    public ResponseEntity<UsuarioDTO> registrarUsuario(@Valid @RequestBody UsuarioCreateDTO dto){
+     public ResponseEntity<UsuarioDTO> registrarUsuario( @RequestBody UsuarioCreateDTO dto){
         return new ResponseEntity<>(usuarioService.crear(dto), HttpStatus.CREATED);
-    }
+     } 
 }
