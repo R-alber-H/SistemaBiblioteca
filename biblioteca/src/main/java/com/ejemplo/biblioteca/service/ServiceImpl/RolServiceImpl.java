@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ejemplo.biblioteca.dto.RolDTO;
 import com.ejemplo.biblioteca.dto.RolRequestDTO;
 import com.ejemplo.biblioteca.entity.Rol;
+import com.ejemplo.biblioteca.exception.RolNoEncontradoException;
 import com.ejemplo.biblioteca.repository.RolRepository;
 import com.ejemplo.biblioteca.service.RolService;
 import com.ejemplo.biblioteca.utils.Estado;
@@ -39,7 +40,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
     @Override
     public RolDTO obtenerPorId(Long id) {
         Rol rol = rolRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El rol no encontrado"));
+                .orElseThrow(() -> new RolNoEncontradoException("El rol no encontrado"));
         return toDTO(rol);
     }
 
@@ -57,7 +58,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
     @Override
     public RolDTO actualizarDatos(Long id, RolRequestDTO dto) {
         Rol rol = rolRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El rol no encontrado"));
+                .orElseThrow(() -> new RolNoEncontradoException("El rol no encontrado"));
         rol.setNombre(dto.nombre());
         Rol rolActualizado = rolRepository.save(rol);
         return toDTO(rolActualizado);
@@ -66,7 +67,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
     @Override
     public RolDTO cambiarEstado(Long id) {
         Rol rol = rolRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El rol no encontrado"));
+                .orElseThrow(() -> new RolNoEncontradoException("El rol no encontrado"));
         rol.setEstado(rol.getEstado() == Estado.HABILITADO ? Estado.DESHABILITADO : Estado.HABILITADO);
         return toDTO(rol);    
     }

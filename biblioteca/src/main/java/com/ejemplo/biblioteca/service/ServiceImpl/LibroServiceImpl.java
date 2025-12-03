@@ -9,6 +9,7 @@ import com.ejemplo.biblioteca.dto.LibroCreateDto;
 import com.ejemplo.biblioteca.dto.LibroDTO;
 import com.ejemplo.biblioteca.dto.LibroUpdateDTO;
 import com.ejemplo.biblioteca.entity.Libro;
+import com.ejemplo.biblioteca.exception.LibroNoEncontradoException;
 import com.ejemplo.biblioteca.repository.LibroRepository;
 import com.ejemplo.biblioteca.service.LibroService;
 import com.ejemplo.biblioteca.utils.Estado;
@@ -29,7 +30,7 @@ public class LibroServiceImpl extends GenericServiceImpl<Libro, Long> implements
     @Override
     public LibroDTO cambiarEstado(Long id) {
         Libro libro = libroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+                .orElseThrow(() -> new LibroNoEncontradoException("Libro no encontrado"));
         libro.setEstado(libro.getEstado() == Estado.HABILITADO ? Estado.DESHABILITADO : Estado.HABILITADO);
         Libro libroActualizado = libroRepository.save(libro);
         return toDTO(libroActualizado);
@@ -69,14 +70,14 @@ public class LibroServiceImpl extends GenericServiceImpl<Libro, Long> implements
     @Override
     public LibroDTO buscarPorId(Long id) {
         Libro libro = libroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));;
+                .orElseThrow(() -> new LibroNoEncontradoException("Libro no encontrado"));;
         return toDTO(libro);
     }
 
     @Override
     public LibroDTO actualizarLibro(LibroUpdateDTO dto, Long id) {
         Libro libro = libroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+                .orElseThrow(() -> new LibroNoEncontradoException("Libro no encontrado"));
         libro.setAutor(dto.autor());
         libro.setTitulo(dto.titulo());
         Libro actualizado = libroRepository.save(libro);

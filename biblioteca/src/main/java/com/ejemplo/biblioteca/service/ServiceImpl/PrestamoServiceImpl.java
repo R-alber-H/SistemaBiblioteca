@@ -11,6 +11,10 @@ import com.ejemplo.biblioteca.entity.DetallePrestamo;
 import com.ejemplo.biblioteca.entity.Libro;
 import com.ejemplo.biblioteca.entity.Prestamo;
 import com.ejemplo.biblioteca.entity.Usuario;
+import com.ejemplo.biblioteca.exception.EstadoPrestamoInvalidoException;
+import com.ejemplo.biblioteca.exception.LibroNoEncontradoException;
+import com.ejemplo.biblioteca.exception.PrestamoNoEncontradoException;
+import com.ejemplo.biblioteca.exception.UsuarioNoEncontradoException;
 import com.ejemplo.biblioteca.repository.DetallePrestamoRepository;
 import com.ejemplo.biblioteca.repository.LibroRepository;
 import com.ejemplo.biblioteca.repository.PrestamoRepository;
@@ -42,7 +46,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
     public PrestamoDTO crearPrestamo(Long usuarioId, List<Long> libroIds) {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario con id " + usuarioId+" no encontrado"));
 
         Prestamo prestamo = new Prestamo();
         prestamo.setUsuario(usuario);
@@ -52,7 +56,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
 
         for (Long libroId : libroIds) {
             Libro libro = libroRepository.findById(libroId)
-                    .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+                    .orElseThrow(() -> new LibroNoEncontradoException("Libro no encontrado"));
 
             libro.descontarStock();
             libroRepository.save(libro);
@@ -94,7 +98,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
     @Override
     public PrestamoDTO obtenerPrestamoPorId(Long id) {
         Prestamo prestamo = prestamoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prestamo no encontrado"));
+                .orElseThrow(() -> new PrestamoNoEncontradoException("Prestamo no encontrado"));
         List<DetallePrestamoDTO> detallesDTO = prestamo.getDetalles().stream()
                 .map(d -> new DetallePrestamoDTO(
                         d.getId(),
@@ -108,11 +112,11 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
     @Override
     public PrestamoDTO cambiarEstadoPrestamo(Long id) {
         Prestamo prestamo = prestamoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prestamo no encontrado"));
+                .orElseThrow(() -> new PrestamoNoEncontradoException("Prestamo no encontrado"));
 
         switch (prestamo.getEstado()) {
             case PRESTADO -> prestamo.setEstado(EstadoPrestamo.DEVUELTO);
-            case DEVUELTO -> throw new RuntimeException("El préstamo ya fue devuelto");
+            case DEVUELTO -> throw new EstadoPrestamoInvalidoException("El préstamo ya fue devuelto");
         }
         
         prestamoRepository.save(prestamo);

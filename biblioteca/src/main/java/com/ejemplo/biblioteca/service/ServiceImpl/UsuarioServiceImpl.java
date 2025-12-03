@@ -10,6 +10,9 @@ import com.ejemplo.biblioteca.dto.UsuarioDTO;
 import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
 import com.ejemplo.biblioteca.entity.Rol;
 import com.ejemplo.biblioteca.entity.Usuario;
+import com.ejemplo.biblioteca.exception.DniRegistradoException;
+import com.ejemplo.biblioteca.exception.RolNoEncontradoException;
+import com.ejemplo.biblioteca.exception.UsuarioNoEncontradoException;
 import com.ejemplo.biblioteca.repository.RolRepository;
 import com.ejemplo.biblioteca.repository.UsuarioRepository;
 import com.ejemplo.biblioteca.service.UsuarioService;
@@ -35,7 +38,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
     @Override
     public UsuarioDTO cambiarEstado(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario con id " + id+" no encontrado"));
         usuario.setEstado(usuario.getEstado() == Estado.HABILITADO ? Estado.DESHABILITADO : Estado.HABILITADO);
         Usuario actualizado = usuarioRepository.save(usuario);
         return toDTO(actualizado);
@@ -45,7 +48,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
     @Transactional
     public UsuarioDTO actualizarDatos(Long id, UsuarioUpdateDTO dto) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario con id " + id+" no encontrado"));
         usuario.setNombres(dto.nombres());
         usuario.setApellidos(dto.apellidos());
         Usuario actualizado = usuarioRepository.save(usuario);
@@ -57,10 +60,10 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
     public UsuarioDTO crear(UsuarioCreateDTO dto) {
         Boolean existeDni = usuarioRepository.existsByDniIgnoreCaseAllIgnoreCase(dto.dni());
         if (existeDni) {
-            throw new RuntimeException("El DNI ya esta registrado");
+            throw new DniRegistradoException("El DNI ya esta registrado");
         }
         Rol rol = rolRepository.findById(dto.idRol())
-            .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+            .orElseThrow(() -> new RolNoEncontradoException("Rol no encontrado"));
         Usuario usuario = new Usuario();
         usuario.setNombres(dto.nombres());
         usuario.setApellidos(dto.apellidos());
@@ -92,7 +95,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
     public UsuarioDTO buscarPorId(Long id) {
 
        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario con id " + id+" no encontrado"));
         return toDTO(usuario);
     }
 
