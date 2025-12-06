@@ -2,6 +2,7 @@ package com.ejemplo.biblioteca.service;
 
 import java.util.List;
 
+import com.ejemplo.biblioteca.dto.RegistroPublicoDTO;
 import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
 import com.ejemplo.biblioteca.dto.UsuarioDTO;
 import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
@@ -13,4 +14,5 @@ public interface UsuarioService extends GenericService<Usuario,Long>{
     UsuarioDTO crear(UsuarioCreateDTO usuario);
     List<UsuarioDTO> listarTodos();
     UsuarioDTO buscarPorId(Long id);
+    UsuarioDTO registroPublico(RegistroPublicoDTO dto);
 }

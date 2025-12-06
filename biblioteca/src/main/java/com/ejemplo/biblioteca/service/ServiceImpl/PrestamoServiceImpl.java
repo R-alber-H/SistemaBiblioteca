@@ -3,6 +3,9 @@ package com.ejemplo.biblioteca.service.ServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.ejemplo.biblioteca.dto.DetallePrestamoDTO;
@@ -41,6 +44,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
         this.detallePrestamoRepository = detallePrestamoRepository;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','BIBLIOTECARIO','CLIENTE')")
     @Transactional
     @Override
     public PrestamoDTO crearPrestamo(Long usuarioId, List<Long> libroIds) {
@@ -78,6 +82,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
         return toDTO(prestamoGuardado, detallesDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     @Override
     public List<PrestamoDTO> listarPrestamos() {
         List<Prestamo> prestamos = prestamoRepository.findAll();
@@ -95,6 +100,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
                 .toList();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','BIBLIOTECARIO','CLIENTE')")
     @Override
     public PrestamoDTO obtenerPrestamoPorId(Long id) {
         Prestamo prestamo = prestamoRepository.findById(id)
@@ -109,6 +115,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
 
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','BIBLIOTECARIO')")
     @Override
     public PrestamoDTO cambiarEstadoPrestamo(Long id) {
         Prestamo prestamo = prestamoRepository.findById(id)
@@ -137,4 +144,29 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, Long> impl
                 prestamo.getEstado(),
                 detallesDTO);
     }
+
+    
+@PreAuthorize("hasRole('CLIENTE')")
+@Override
+public List<PrestamoDTO> listarPrestamosDelUsuario() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String correo = auth.getName();
+
+    Usuario usuario = usuarioRepository.findByCorreo(correo)
+            .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado"));
+
+    List<Prestamo> prestamos = prestamoRepository.findByUsuarioId(usuario.getId());
+
+    return prestamos.stream()
+            .map(prestamo -> {
+                List<DetallePrestamoDTO> detallesDTO = prestamo.getDetalles().stream()
+                        .map(d -> new DetallePrestamoDTO(
+                                d.getId(),
+                                d.getLibro().getId(),
+                                d.getLibro().getTitulo()))
+                        .toList();
+                return toDTO(prestamo, detallesDTO);
+            })
+            .toList();
+}
 }

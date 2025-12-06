@@ -1,6 +1,5 @@
 package com.ejemplo.biblioteca.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
-                        .requestMatchers("/api/libros/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
+                        .requestMatchers("/api/libros/**").hasAnyRole("ADMIN", "BIBLIOTECARIO", "CLIENTE")
                         .requestMatchers("/api/prestamos/**").hasAnyRole("ADMIN", "BIBLIOTECARIO", "CLIENTE")
                         .anyRequest().authenticated())
 

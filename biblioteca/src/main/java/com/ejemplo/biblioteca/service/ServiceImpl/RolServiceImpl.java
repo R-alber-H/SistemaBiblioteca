@@ -2,6 +2,7 @@ package com.ejemplo.biblioteca.service.ServiceImpl;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.ejemplo.biblioteca.dto.RolDTO;
@@ -24,6 +25,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
         this.rolRepository = rolRepository;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<RolDTO> listarTodos() {
         List<Rol> roles = rolRepository.findAll();
@@ -37,6 +39,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
                 .toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public RolDTO obtenerPorId(Long id) {
         Rol rol = rolRepository.findById(id)
@@ -44,6 +47,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
         return toDTO(rol);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @Transactional
     public RolDTO crear(RolRequestDTO dto) {
@@ -55,6 +59,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
         return toDTO(rolGuardado);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public RolDTO actualizarDatos(Long id, RolRequestDTO dto) {
         Rol rol = rolRepository.findById(id)
@@ -64,6 +69,7 @@ public class RolServiceImpl extends GenericServiceImpl<Rol, Long> implements Rol
         return toDTO(rolActualizado);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public RolDTO cambiarEstado(Long id) {
         Rol rol = rolRepository.findById(id)
