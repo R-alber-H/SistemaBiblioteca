@@ -3,6 +3,8 @@ package com.ejemplo.biblioteca.service.ServiceImpl;
 import java.util.List;
 
 import java.util.Optional;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.ejemplo.biblioteca.dto.LibroCreateDto;
@@ -26,6 +28,7 @@ public class LibroServiceImpl extends GenericServiceImpl<Libro, Long> implements
         this.libroRepository = libroRepository;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     @Transactional
     @Override
     public LibroDTO cambiarEstado(Long id) {
@@ -36,6 +39,7 @@ public class LibroServiceImpl extends GenericServiceImpl<Libro, Long> implements
         return toDTO(libroActualizado);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     @Override
     public LibroDTO registrarLibro(LibroCreateDto dto) {
         Optional<Libro> libroExistente = libroRepository.findByIsbnIgnoreCase(dto.isbn());
@@ -74,6 +78,7 @@ public class LibroServiceImpl extends GenericServiceImpl<Libro, Long> implements
         return toDTO(libro);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     @Override
     public LibroDTO actualizarLibro(LibroUpdateDTO dto, Long id) {
         Libro libro = libroRepository.findById(id)

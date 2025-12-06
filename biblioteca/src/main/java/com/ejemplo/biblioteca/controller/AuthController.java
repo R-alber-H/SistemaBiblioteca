@@ -30,8 +30,9 @@ public class AuthController {
      private final CustomUserDetailsService customUserDetailsService;
 
      @PostMapping("/registro")
-     public ResponseEntity<UsuarioDTO> registrarUsuario( @RequestBody UsuarioCreateDTO dto){
-        return new ResponseEntity<>(usuarioService.crear(dto), HttpStatus.CREATED);
+     public ResponseEntity<UsuarioDTO> registrarUsuario( @RequestBody RegistroPublicoDTO dto){
+        UsuarioDTO usuarioRegistrado = usuarioService.registroPublico(dto);
+        return new ResponseEntity<>(usuarioRegistrado, HttpStatus.CREATED);
      }
 
     @PostMapping("/login")

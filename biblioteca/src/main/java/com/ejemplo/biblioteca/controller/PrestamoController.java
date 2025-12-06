@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,5 +36,11 @@ public class PrestamoController {
     @PutMapping("/{id}")
     public ResponseEntity<PrestamoDTO> cambiarEstadoPrestamo(@PathVariable Long id){
         return new ResponseEntity<>(prestamoService.cambiarEstadoPrestamo(id), HttpStatus.OK);
+    }
+
+     @GetMapping("/mis-prestamos")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public List<PrestamoDTO> misPrestamos() {
+        return prestamoService.listarPrestamosDelUsuario();
     }
 }

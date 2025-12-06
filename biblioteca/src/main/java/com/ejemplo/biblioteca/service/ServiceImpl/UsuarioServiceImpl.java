@@ -2,9 +2,11 @@ package com.ejemplo.biblioteca.service.ServiceImpl;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ejemplo.biblioteca.dto.RegistroPublicoDTO;
 import com.ejemplo.biblioteca.dto.UsuarioCreateDTO;
 import com.ejemplo.biblioteca.dto.UsuarioDTO;
 import com.ejemplo.biblioteca.dto.UsuarioUpdateDTO;
@@ -34,6 +36,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
         this.passwordEncoder = passwordEncoder;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public UsuarioDTO cambiarEstado(Long id) {
@@ -44,6 +47,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
         return toDTO(actualizado);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @Transactional
     public UsuarioDTO actualizarDatos(Long id, UsuarioUpdateDTO dto) {
@@ -55,6 +59,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
         return toDTO(actualizado);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @Transactional
     public UsuarioDTO crear(UsuarioCreateDTO dto) {
@@ -77,6 +82,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
         return toDTO(usuarioCreado);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<UsuarioDTO> listarTodos() {
         List<Usuario> usuarios = usuarioRepository.findAll();
@@ -91,6 +97,7 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
         )).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UsuarioDTO buscarPorId(Long id) {
 
@@ -109,4 +116,24 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario, Long> implem
                 usuario.getEstado(),
                 usuario.getRol());
     }
+
+    @Override
+    @Transactional
+    public UsuarioDTO registroPublico(RegistroPublicoDTO dto) {
+
+    Long rolClienteId = rolRepository.findByNombre("CLIENTE")
+            .orElseThrow(() -> new RuntimeException("Rol CLIENTE no encontrado"))
+            .getId();
+
+    UsuarioCreateDTO nuevo = new UsuarioCreateDTO(
+            dto.nombres(),
+            dto.apellidos(),
+            dto.dni(),
+            dto.correo(),
+            dto.password(),
+            rolClienteId
+    );
+
+    return crear(nuevo);
+}
 }

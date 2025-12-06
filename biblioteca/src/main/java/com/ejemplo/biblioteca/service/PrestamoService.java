@@ -10,5 +10,6 @@ public interface PrestamoService extends GenericService<Prestamo,Long>{
     List<PrestamoDTO> listarPrestamos();
     PrestamoDTO obtenerPrestamoPorId(Long id);
     PrestamoDTO cambiarEstadoPrestamo(Long id);
+    List<PrestamoDTO> listarPrestamosDelUsuario();
 
 }
