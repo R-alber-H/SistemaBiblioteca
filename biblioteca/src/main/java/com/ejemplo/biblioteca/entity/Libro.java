@@ -1,5 +1,6 @@
 package com.ejemplo.biblioteca.entity;
 
+import com.ejemplo.biblioteca.exception.LibroAgotadoException;
 import com.ejemplo.biblioteca.utils.Estado;
 
 import jakarta.persistence.Column;
@@ -39,7 +40,7 @@ public class Libro extends BaseEntity {
 
     public void verificarStockDisponible() {
         if (stock <= 0) {
-            throw new RuntimeException("No hay stock disponible para el libro: " + titulo);
+            throw new LibroAgotadoException("No hay stock disponible para el libro: " + titulo);
         }
     }
 
